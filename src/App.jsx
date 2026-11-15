@@ -1,8 +1,10 @@
 ﻿import { useState, useEffect, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { supabase } from './supabaseClient'
 import './App.css'
 
 function App() {
+  const navigate = useNavigate()
   const [profiles, setProfiles] = useState([])
   const [workspaces, setWorkspaces] = useState([])
   const [workspaceMembers, setWorkspaceMembers] = useState([])
@@ -14,6 +16,8 @@ function App() {
   
   const [loading, setLoading] = useState(true) // 처음엔 무조건 로딩 중이므로 true로 시작
   const [messagesLoading, setMessagesLoading] = useState(false)
+  const [signingOut, setSigningOut] = useState(false)
+  const [logoutError, setLogoutError] = useState('')
 
   // 1. 초기 데이터 로딩
   useEffect(() => {
@@ -107,6 +111,21 @@ function App() {
     const channel = channels.find(c => c.id === activeChannel)
     return channel ? channel.name : '채널 없음'
   }, [channels, activeChannel, loading])
+
+  const handleLogout = async () => {
+    setSigningOut(true)
+    setLogoutError('')
+
+    try {
+      const { error } = await supabase.auth.signOut()
+      if (error) throw error
+      navigate('/login', { replace: true })
+    } catch (error) {
+      console.error('로그아웃 에러:', error.message)
+      setLogoutError('로그아웃하지 못했습니다. 잠시 후 다시 시도해주세요.')
+      setSigningOut(false)
+    }
+  }
 
   const handleSendMessage = async (e) => {
     e.preventDefault(); // 폼 제출 시 페이지 새로고침 방지
@@ -214,8 +233,14 @@ function App() {
                   ? '개발자 전용 협업 채팅' 
                   : '데이터가 없습니다.'}
             </h1>
+            {logoutError && <p className="logout-error" role="alert">{logoutError}</p>}
           </div>
-          <button className="primary-btn">Open Pair Room</button>
+          <div className="chat-header-actions">
+            <button className="primary-btn">Open Pair Room</button>
+            <button className="secondary-btn" onClick={handleLogout} disabled={signingOut}>
+              {signingOut ? '로그아웃 중...' : '로그아웃'}
+            </button>
+          </div>
         </header>
 
         <section className="chat-stream">
