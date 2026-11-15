@@ -227,6 +227,19 @@ aside {
   color: var(--text-primary);
 }
 
+.chat-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.logout-error {
+  margin-top: 0.5rem;
+  color: #f87171;
+  font-size: 0.85rem;
+}
+
 /* 메시지 스크롤 영역 */
 .chat-stream {
   flex: 1;
