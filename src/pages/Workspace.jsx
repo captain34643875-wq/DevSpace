@@ -5,6 +5,7 @@ import "../css/workspace.css"
 
 function Workspace() {
   const navigate = useNavigate()
+  const navigate = useNavigate()
   const [currentUserId, setCurrentUserId] = useState(import.meta.env.VITE_DEV_USER_ID || '')
   const [myWorkspaces, setMyWorkspaces] = useState([])
   const [searchQuery, setSearchQuery] = useState('')
@@ -13,6 +14,8 @@ function Workspace() {
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const [signingOut, setSigningOut] = useState(false)
+  const [logoutError, setLogoutError] = useState('')
 
   useEffect(() => {
     const loadSessionUser = async () => {
@@ -27,6 +30,21 @@ function Workspace() {
 
     loadSessionUser()
   }, [])
+
+  const handleLogout = async () => {
+    setSigningOut(true)
+    setLogoutError('')
+
+    try {
+      const { error } = await supabase.auth.signOut()
+      if (error) throw error
+      navigate('/login', { replace: true })
+    } catch (error) {
+      console.error('로그아웃 에러:', error.message)
+      setLogoutError('로그아웃하지 못했습니다. 잠시 후 다시 시도해주세요.')
+      setSigningOut(false)
+    }
+  }
 
   const fetchMyWorkspaces = useCallback(async () => {
     if (!currentUserId) {
@@ -176,6 +194,15 @@ function Workspace() {
             <p className="eyebrow">DevSpace</p>
             <h1>Welcome back, Developer 👋</h1>
             <p>참여할 워크스페이스를 선택하거나 새로운 공간을 만들어보세요.</p>
+            <button
+              type="button"
+              className="secondary-btn logout-btn"
+              onClick={handleLogout}
+              disabled={signingOut}
+            >
+              {signingOut ? '로그아웃 중...' : '로그아웃'}
+            </button>
+            {logoutError && <p className="logout-error" role="alert">{logoutError}</p>}
         </header>
 
         <div className="lobby-grid">
