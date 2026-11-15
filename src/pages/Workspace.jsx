@@ -5,7 +5,6 @@ import "../css/workspace.css"
 
 function Workspace() {
   const navigate = useNavigate()
-  const navigate = useNavigate()
   const [currentUserId, setCurrentUserId] = useState(import.meta.env.VITE_DEV_USER_ID || '')
   const [myWorkspaces, setMyWorkspaces] = useState([])
   const [searchQuery, setSearchQuery] = useState('')
