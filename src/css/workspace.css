@@ -34,6 +34,16 @@
   color: #9ca3af;
 }
 
+.logout-btn {
+  margin-top: 1rem;
+}
+
+.logout-error {
+  margin-top: 0.75rem;
+  color: #f87171;
+  font-size: 0.9rem;
+}
+
 .lobby-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
